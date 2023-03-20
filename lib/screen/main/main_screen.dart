@@ -31,6 +31,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   bool get isAndroid => !kIsWeb && Platform.isAndroid;
   bool keyboardVisible = false;
   final homeCtrl = Get.find<HomeController>();
+  final speakAllowed = true.obs;
 
   final _formKey = GlobalKey<FormState>();
   final _wordInputController = TextEditingController();
@@ -111,6 +112,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         _wordInputController.clear();
         _speak(homeCtrl.wordList[0]);
         FocusScope.of(context).requestFocus(focusNode);
+        speakAllowed.value = true;
         return;
       }
       homeCtrl.remainInputTimes.value--;
@@ -191,8 +193,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       ),
       body: Obx(() {
         flutterTts.setLanguage(homeCtrl.ttsLanguage.value);
-        if (homeCtrl.wordList.isNotEmpty) {
+        if (homeCtrl.wordList.isNotEmpty && speakAllowed.value) {
           _speak(homeCtrl.wordList[0]);
+          speakAllowed.value = false;
         }
         return homeCtrl.wordList.isNotEmpty
             ? Center(
@@ -202,7 +205,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                       padding: EdgeInsets.fromLTRB(
                           0,
                           MediaQuery.of(context).size.height *
-                              (keyboardVisible ? 0.15 : 0.25),
+                              (keyboardVisible ? 0.25 : 0.15),
                           0,
                           0),
                       child: homeCtrl.mode.value == 1
