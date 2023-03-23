@@ -165,7 +165,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    _getLanguages();
+    // _getLanguages();
 
     return Scaffold(
       key: scaffoldKey,
@@ -204,8 +204,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                     Padding(
                       padding: EdgeInsets.fromLTRB(
                           0,
-                          MediaQuery.of(context).size.height *
-                              (keyboardVisible ? 0.25 : 0.15),
+                          MediaQuery.of(context).size.width >
+                                  MediaQuery.of(context).size.height
+                              ? MediaQuery.of(context).size.width *
+                                  (keyboardVisible ? 0.25 : 0.13)
+                              : MediaQuery.of(context).size.height *
+                                  (keyboardVisible ? 0.3 : 0.15),
                           0,
                           0),
                       child: homeCtrl.mode.value == 1

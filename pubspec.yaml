@@ -1,5 +1,5 @@
 name: word_dictation
-description: A new Flutter project.
+description: A small program that allows dictation of words and dictation of mispronounced words for rewriting.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -42,6 +42,8 @@ dependencies:
   flutter_native_splash:
   url_launcher: 
   flutter_svg:
+  firebase_analytics:
+  firebase_core:
 
 dev_dependencies:
   flutter_test:
@@ -101,7 +103,7 @@ flutter_native_splash:
   branding_dark: image/icon.png
 
   android_12:
-    image: image/icon.png
+    image: image/Icon-1152.png
     icon_background_color: "#ffffff"
-    image_dark: image/icon.png
+    image_dark: image/Icon-1152.png
     icon_background_color_dark: "#121212"
