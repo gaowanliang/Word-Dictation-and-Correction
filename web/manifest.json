@@ -1,11 +1,11 @@
 {
-    "name": "word_dictation",
-    "short_name": "word_dictation",
+    "name": "Dictation",
+    "short_name": "Dictation",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A small program that allows dictation of words and dictation of mispronounced words for rewriting.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

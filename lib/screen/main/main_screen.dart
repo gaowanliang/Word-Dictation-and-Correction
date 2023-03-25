@@ -165,7 +165,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    // _getLanguages();
+    _getLanguages();
 
     return Scaffold(
       key: scaffoldKey,

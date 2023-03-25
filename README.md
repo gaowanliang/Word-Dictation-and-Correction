@@ -38,7 +38,7 @@ The currently supported separators are: Tab, space, comma, semicolon.
 | Comma     | `,`       |
 | Semicolon | `;`       |
 
-If it shows `No TTS language found, maybe TTS engine blocked by system`, it means your system doesn't support TTS, or you don't have TTS engine installed. Most domestic Android phones need to install Google TTS engine, otherwise it may not work (currently Android 13 system has a conflict with the TTS driver system currently installed in this software, so it cannot be used). The current default language is `en-GB`, which is British English.
+If it shows `No TTS language found, maybe TTS engine blocked by system`, it means your system doesn't support TTS, or you don't have TTS engine installed. It is recommended that you install Google TTS engine, otherwise it may not work (currently Android 13 system has a conflict with the TTS driver system currently installed in this software, so it cannot be used). The current default language is `en-GB`, which is British English.
 
 Below you can choose the mode, where `Correction mode` means to do wrong word dictation and `Dictation mode` means to do word dictation. When you select `Correction mode`, you need to fill in how many times you need to write, while `Dictation mode` does not.
 
