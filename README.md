@@ -7,7 +7,7 @@ A small program that allows dictation of words and dictation of mispronounced wo
 ![Main](/image/main.jpeg)
 
 # Notice
-This program currently does not save words, and if you close the program, all words will be lost. So please make sure to import as many words as you can remember at a time.
+**This program currently does not save words, and if you close the program, all words will be lost. So please make sure to import as many words as you can remember at a time.**
 
 # Usage
 
@@ -50,7 +50,18 @@ After you click Save, you will jump back to the main screen, and you can start d
 
 The program plays the word pronunciation after each confirmation of input, or you can click on the word and it will be pronounced. The number above the word indicates how many more times it needs to be written, and when it is finished, it will automatically jump to the next word. After each word is written, you can use the Enter key to submit it. When a spelling error is made, the error will be indicated and the remaining times will not be deducted.
 
+### Special feature of error correction mode -- blurring words until they are wrong
+
+![](/image/6.jpeg)
+When you select `Correction mode` in the settings screen, and `Blur words until input error` is selected in `Correction mode`, the words will be blurred until you make an input error by default in the correction mode. When you type correctly, the words will be blurred again until the next input error.
+
+
 ## Word dictation step details
 ![](/image/4.jpeg)
 
 The program plays the word pronunciation after each confirmation of input, and you can also pronounce it by clicking the pronunciation button above. After each word is written, you can use the Enter key to submit it. When a spelling error is made, it will indicate the error. When all words are written, an interface will pop up to show you the words that are misspelled.
+
+## Favorites mode details
+![](/image/5.jpeg)
+
+When you are correcting or dictating, you can type "..." (three dots) in the input box, and the current word will be added to your favorites. You can click the ⭐ icon in the upper right corner of the main screen, and you will enter the Favorites screen.

@@ -16,6 +16,7 @@ class _SettingScreenState extends State<SettingScreen> {
   TextEditingController _timesController = TextEditingController();
   final Rxn<int> selected = Rxn<int>();
   final homeCtrl = Get.find<HomeController>();
+  final RxBool isBlur = false.obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,6 +147,14 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                         ),
                       ),
+                    if (selected.value == 1)
+                      CheckboxListTile(
+                        title: Text('Blur words until input error'),
+                        value: isBlur.isTrue,
+                        onChanged: (value) {
+                          isBlur.value = value ?? false;
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -177,7 +186,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           selected.value ?? 1,
                           int.parse(_timesController.text.isEmpty
                               ? '1'
-                              : _timesController.text));
+                              : _timesController.text),
+                          isBlur.value);
 
                       Get.back();
                     },
@@ -190,7 +200,12 @@ class _SettingScreenState extends State<SettingScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Gaowan Liang © 2023- , Word Dictation, All rights reserved.',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .color!
+                          .withOpacity(0.4)),
                 ),
               ),
             ],

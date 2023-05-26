@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -12,8 +14,12 @@ import 'firebase_options.dart';
 
 void main() async {
   await GetStorage.init();
+  bool needsWeb = defaultTargetPlatform == TargetPlatform.linux ||
+      defaultTargetPlatform == TargetPlatform.windows;
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: needsWeb
+        ? DefaultFirebaseOptions.web
+        : DefaultFirebaseOptions.currentPlatform,
   );
   await Get.putAsync(() => StorageService().init());
   runApp(MyApp());
@@ -28,8 +34,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
         title: 'Word auditory memory',
-        theme: lightThemeData(context),
-        darkTheme: darkThemeData(context),
+        theme: m3LightThemeData(context),
+        darkTheme: m3DarkThemeData(context),
         navigatorObservers: [
           FlutterSmartDialog.observer,
           FirebaseAnalyticsObserver(analytics: analytics)
