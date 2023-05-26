@@ -96,7 +96,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 
   Future _speak(String text) async {
-    await _stop();
+    // await _stop();
     var result = await flutterTts.speak(text);
     if (result == 1) setState(() => ttsState = TtsState.playing);
   }
