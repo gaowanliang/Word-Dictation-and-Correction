@@ -124,10 +124,11 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         speakAllowed.value = true;
         return;
       }
-      wordBlur.value = homeCtrl.isBlur.value ? true : false;
+
       if (!homeCtrl.isBlur.value || (homeCtrl.isBlur.value && wordBlur.value)) {
         homeCtrl.remainInputTimes.value--;
       }
+      wordBlur.value = homeCtrl.isBlur.value ? true : false;
       _wordInputController.clear();
       FocusScope.of(context).requestFocus(focusNode);
 
