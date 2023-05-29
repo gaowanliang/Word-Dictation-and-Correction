@@ -90915,48 +90915,52 @@ for(p=J.aq(n),o=0;o<p.gt(n);++o)m.push(J.cE(p.h(n,o)))
 q.w.fr.sl(0,m)
 return A.I(null,r)}})
 return A.J($async$wV,r)},
-QH(){var s,r,q,p=this,o=p.Q,n=p.w,m=n.ay
-if(o.a.a===J.aO(m.gl(m),0)){s=n.dx
-if(J.d(s.gl(s),1)){m.fi(m,0)
-r=n.ch
+QH(){var s,r,q,p,o=this,n=o.Q,m=o.w,l=m.ay
+if(n.a.a===J.aO(l.gl(l),0)){s=m.dx
+if(J.d(s.gl(s),1)){l.fi(l,0)
+r=m.ch
 r.fi(r,0)
-r=n.db
+r=m.db
 s.sl(0,r.gl(r))
-o.jK(0,B.eS)
-p.jS(J.aO(m.gl(m),0))
-m=p.c
-m.toString
-A.zD(m).vI(p.as)
-o=n.cy
-o=o.gl(o)&&!0
-p.y.sl(0,o)
-p.x.sl(0,!0)
-return}n=n.cy
+n.jK(0,B.eS)
+o.jS(J.aO(l.gl(l),0))
+l=o.c
+l.toString
+A.zD(l).vI(o.as)
+n=m.cy
 n=n.gl(n)&&!0
-p.y.sl(0,n)
-s.sl(0,s.gl(s)-1)
-o.jK(0,B.eS)
-o=p.c
-o.toString
-A.zD(o).vI(p.as)
-p.jS(J.aO(m.gl(m),0))}else{switch(o.a.a){case"...":s=n.go
-n=n.ch
-if(s.p(s,A.f(J.aO(m.gl(m),0))+" "+A.f(J.aO(n.gl(n),0))))A.jz("This word is already in the Favorites list")
+o.y.sl(0,n)
+o.x.sl(0,!0)
+return}r=o.y
+m=m.cy
+r.sl(0,m.gl(m)&&!0)
+if(m.gl(m))m=m.gl(m)&&r.gl(r)
+else m=!0
+if(m)s.sl(0,s.gl(s)-1)
+n.jK(0,B.eS)
+n=o.c
+n.toString
+A.zD(n).vI(o.as)
+o.jS(J.aO(l.gl(l),0))}else{switch(n.a.a){case"...":s=m.go
+r=m.ch
+if(s.p(s,A.f(J.aO(l.gl(l),0))+" "+A.f(J.aO(r.gl(r),0))))A.jz("This word is already in the Favorites list")
 else{A.jz('Successfully collected, click on the "star" icon in the upper right corner to view')
-r=A.f(J.aO(m.gl(m),0))
-n=A.f(J.aO(n.gl(n),0))
-q=s.ct$
-q===$&&A.b()
-J.eO(q,r+" "+n)
+q=A.f(J.aO(l.gl(l),0))
+m=m.dy
+m=A.f(m.gl(m))
+r=A.f(J.aO(r.gl(r),0))
+p=s.ct$
+p===$&&A.b()
+J.eO(p,q+m+r)
 s.cV$.iq(s.gl(s))}break
 case"":A.jz("Please enter the word")
 break
-default:p.y.sl(0,!1)
-A.jz("Wrong answer, please try again")}o.jK(0,B.eS)
-o=p.c
-o.toString
-A.zD(o).vI(p.as)
-p.jS(J.aO(m.gl(m),0))}},
+default:o.y.sl(0,!1)
+A.jz("Wrong answer, please try again")}n.jK(0,B.eS)
+n=o.c
+n.toString
+A.zD(n).vI(o.as)
+o.jS(J.aO(l.gl(l),0))}},
 MO(){var s,r,q,p,o,n=this,m=n.Q,l=m.a.a
 if(l===""){A.jz("Please enter the word")
 return}s=n.w
