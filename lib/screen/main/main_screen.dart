@@ -125,7 +125,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         return;
       }
       wordBlur.value = homeCtrl.isBlur.value ? true : false;
-      homeCtrl.remainInputTimes.value--;
+      if (!homeCtrl.isBlur.value || (homeCtrl.isBlur.value && wordBlur.value)) {
+        homeCtrl.remainInputTimes.value--;
+      }
       _wordInputController.clear();
       FocusScope.of(context).requestFocus(focusNode);
 
@@ -139,8 +141,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           } else {
             SmartDialog.showToast(
                 "Successfully collected, click on the \"star\" icon in the upper right corner to view");
+
             homeCtrl.FavoritesWordList.add(
-                "${homeCtrl.wordList[0]} ${homeCtrl.wordMeaningList[0]}");
+                "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}");
           }
           break;
         case "":

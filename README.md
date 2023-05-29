@@ -53,8 +53,10 @@ The program plays the word pronunciation after each confirmation of input, or yo
 ### Special feature of error correction mode -- blurring words until they are wrong
 
 ![](/image/6.jpeg)
+
 When you select `Correction mode` in the settings screen, and `Blur words until input error` is selected in `Correction mode`, the words will be blurred until you make an input error by default in the correction mode. When you type correctly, the words will be blurred again until the next input error.
 
+In this mode, entering correctly when the word is not blurred will not deduct the remaining number of times.
 
 ## Word dictation step details
 ![](/image/4.jpeg)

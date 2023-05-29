@@ -29,7 +29,7 @@ qualifications	资格
 目前支持的分隔符有：Tab、空格、逗号、分号。
 
 | Separator | Character |
-|-----------|-----------|
+| --------- | --------- |
 | Tab       | `\t`      |
 | Space     | ` `       |
 | Comma     | `,`       |
@@ -50,6 +50,7 @@ qualifications	资格
 ### 改错模式的特殊功能 —— 模糊单词直到错误
 ![](/image/6.jpeg)
 当你在设置界面中选择了`Correction mode`，并且在`Correction mode`中选择了`Blur words until input error`，则在改错模式中，默认会将单词模糊，直到你输入错误为止。当你输入正确后，单词会重新模糊，直到下一次输入错误为止。
+在这个模式中，在单词没有被模糊的时候输入正确将不会扣除剩余次数。
 
 ## 单词听写步骤详情
 ![](/image/4.jpeg)
