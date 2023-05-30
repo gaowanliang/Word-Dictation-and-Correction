@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:badges/badges.dart' as badges;
 
 import 'package:get/get.dart';
 
@@ -137,7 +138,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       switch (_wordInputController.text) {
         case "...":
           if (homeCtrl.FavoritesWordList.contains(
-              "${homeCtrl.wordList[0]} ${homeCtrl.wordMeaningList[0]}")) {
+              "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}")) {
             SmartDialog.showToast("This word is already in the Favorites list");
           } else {
             SmartDialog.showToast(
@@ -223,13 +224,20 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           ),
         ),
         actions: [
-          IconButton(
-              onPressed: () {
-                Get.to(() => FavoritesScreen(
-                      text: homeCtrl.FavoritesWordList.join('\n'),
-                    ));
-              },
-              icon: Icon(Icons.star_rate_outlined)),
+          badges.Badge(
+            badgeContent: homeCtrl.FavoritesWordList.isEmpty
+                ? null
+                : Text(
+                    homeCtrl.FavoritesWordList.length.toString(),
+                  ),
+            child: IconButton(
+                onPressed: () {
+                  Get.to(() => FavoritesScreen(
+                        text: homeCtrl.FavoritesWordList.join('\n'),
+                      ));
+                },
+                icon: const Icon(Icons.star_rate_outlined)),
+          ),
           IconButton(
               onPressed: () {
                 Get.to(() => SettingScreen());
