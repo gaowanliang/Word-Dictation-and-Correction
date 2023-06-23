@@ -20,12 +20,12 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Setting'), centerTitle: true, actions: [
+      appBar: AppBar(title: const Text('Setting'), centerTitle: true, actions: [
         IconButton(
           onPressed: () {
             Get.to(() => TTSTestScreen());
           },
-          icon: Icon(Icons.cruelty_free),
+          icon: const Icon(Icons.cruelty_free),
         ),
       ]),
       body: SingleChildScrollView(
@@ -41,7 +41,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   controller: _textController,
                   maxLines: 10,
                   minLines: 10,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Input words and meanings',
                   ),
@@ -51,7 +51,7 @@ class _SettingScreenState extends State<SettingScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: DropdownButtonFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Separator',
                   ),
@@ -59,22 +59,22 @@ class _SettingScreenState extends State<SettingScreen> {
                   onChanged: (value) {
                     homeCtrl.separator.value = value.toString();
                   },
-                  items: [
+                  items: const [
                     DropdownMenuItem(
-                      child: Text('Tab'),
                       value: '\t',
+                      child: Text('Tab'),
                     ),
                     DropdownMenuItem(
-                      child: Text('Space'),
                       value: ' ',
+                      child: Text('Space'),
                     ),
                     DropdownMenuItem(
-                      child: Text('Comma'),
                       value: ',',
+                      child: Text('Comma'),
                     ),
                     DropdownMenuItem(
-                      child: Text('Semicolon'),
                       value: ';',
+                      child: Text('Semicolon'),
                     ),
                   ],
                 ),
@@ -88,7 +88,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: DropdownButtonFormField(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'TTS language',
                               ),
@@ -98,8 +98,8 @@ class _SettingScreenState extends State<SettingScreen> {
                               items: homeCtrl.ttsLanguages
                                   .map(
                                     (e) => DropdownMenuItem(
-                                      child: Text(e),
                                       value: e,
+                                      child: Text(e),
                                     ),
                                   )
                                   .toList(),
@@ -108,12 +108,12 @@ class _SettingScreenState extends State<SettingScreen> {
                               },
                             ),
                           )
-                        : Text(
+                        : const Text(
                             'No TTS language found, maybe TTS engine blocked by system'),
                     // 两个checkbox，用来设置是改错模式还是听写模式，如果是改错模式，就显示一个文本框，用来规定一个单词改几遍，默认为改错模式
 
                     CheckboxListTile(
-                      title: Text('Correction mode'),
+                      title: const Text('Correction mode'),
                       value: selected.value == 1,
                       onChanged: (value) {
                         if (value == true) {
@@ -124,7 +124,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       },
                     ),
                     CheckboxListTile(
-                      title: Text('Dictation mode'),
+                      title: const Text('Dictation mode'),
                       value: selected.value == 2,
                       onChanged: (value) {
                         if (value == true) {
@@ -141,7 +141,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         child: TextField(
                           controller: _timesController,
                           keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: 'How many times to correction',
                           ),
@@ -149,7 +149,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                     if (selected.value == 1)
                       CheckboxListTile(
-                        title: Text('Blur words until input error'),
+                        title: const Text('Blur words until input error'),
                         value: isBlur.isTrue,
                         onChanged: (value) {
                           isBlur.value = value ?? false;
@@ -191,7 +191,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
                       Get.back();
                     },
-                    child: Text('Save'),
+                    child: const Text('Save'),
                   ),
                 ),
               ),

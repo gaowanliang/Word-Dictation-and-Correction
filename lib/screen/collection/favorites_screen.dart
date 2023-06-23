@@ -10,7 +10,7 @@ class FavoritesScreen extends StatelessWidget {
     _editCtrl.text = text;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorites'),
+        title: const Text('Favorites'),
         centerTitle: true,
       ),
       body: Padding(
@@ -18,9 +18,9 @@ class FavoritesScreen extends StatelessWidget {
         child: Column(
           children: [
             if (_editCtrl.text.isEmpty)
-              Text(
+              const Text(
                   "You don't have any favorite words yet. In Correction or Dictation, enter \"...\" in the input box to save the current word"),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
               controller: _editCtrl,
               maxLines: 10,

@@ -15,7 +15,7 @@ class HomeController extends GetxController {
   final ttsLanguages = <String>[].obs;
   final ttsLanguage = 'en-GB'.obs;
   final wrongWordList = <String>[].obs;
-  final FavoritesWordList = <String>[].obs;
+  final favoritesWordList = <String>[].obs;
 
   saveWord(String data, int mode, int? correctTimes, bool? isBlur) {
     wordAndMeaningText.value = data;

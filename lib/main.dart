@@ -42,6 +42,6 @@ class MyApp extends StatelessWidget {
         ],
         builder: FlutterSmartDialog.init(),
         initialBinding: HomeBinding(),
-        home: MainScreen());
+        home: const MainScreen());
   }
 }

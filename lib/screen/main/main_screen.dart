@@ -14,6 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:word_dictation/modules/controller.dart';
 import 'package:word_dictation/screen/collection/favorites_screen.dart';
+import 'package:word_dictation/screen/listening_word_select/listening_word_select_screen.dart';
 import 'package:word_dictation/screen/setting/setting_screen.dart';
 import 'package:word_dictation/screen/summary/summary_screen.dart';
 
@@ -115,14 +116,20 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   void _submitForm() {
     if (_wordInputController.text == homeCtrl.wordList[0]) {
       if (homeCtrl.remainInputTimes.value == 1) {
-        homeCtrl.wordList.removeAt(0);
-        homeCtrl.wordMeaningList.removeAt(0);
-        homeCtrl.remainInputTimes.value = homeCtrl.correctTimes.value;
+        if (!homeCtrl.isBlur.value ||
+            (homeCtrl.isBlur.value && wordBlur.value)) {
+          homeCtrl.wordList.removeAt(0);
+          homeCtrl.wordMeaningList.removeAt(0);
+          homeCtrl.remainInputTimes.value = homeCtrl.correctTimes.value;
+          wordBlur.value = homeCtrl.isBlur.value ? true : false;
+          speakAllowed.value = true;
+        } else if (homeCtrl.isBlur.value && !wordBlur.value) {
+          wordBlur.value = homeCtrl.isBlur.value ? true : false;
+        }
         _wordInputController.clear();
         _speak(homeCtrl.wordList[0]);
         FocusScope.of(context).requestFocus(focusNode);
-        wordBlur.value = homeCtrl.isBlur.value ? true : false;
-        speakAllowed.value = true;
+
         return;
       }
 
@@ -137,14 +144,14 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     } else {
       switch (_wordInputController.text) {
         case "...":
-          if (homeCtrl.FavoritesWordList.contains(
+          if (homeCtrl.favoritesWordList.contains(
               "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}")) {
             SmartDialog.showToast("This word is already in the Favorites list");
           } else {
             SmartDialog.showToast(
                 "Successfully collected, click on the \"star\" icon in the upper right corner to view");
 
-            homeCtrl.FavoritesWordList.add(
+            homeCtrl.favoritesWordList.add(
                 "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}");
           }
           break;
@@ -224,25 +231,36 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           ),
         ),
         actions: [
-          badges.Badge(
-            badgeContent: homeCtrl.FavoritesWordList.isEmpty
-                ? null
-                : Text(
-                    homeCtrl.FavoritesWordList.length.toString(),
+          IconButton(
+              onPressed: () {
+                Get.to(() => ListeningWordSelectScreen());
+              },
+              icon: const Icon(Icons.linear_scale_outlined)),
+          homeCtrl.favoritesWordList.isNotEmpty
+              ? badges.Badge(
+                  badgeContent: Text(
+                    homeCtrl.favoritesWordList.length.toString(),
                   ),
-            child: IconButton(
-                onPressed: () {
-                  Get.to(() => FavoritesScreen(
-                        text: homeCtrl.FavoritesWordList.join('\n'),
-                      ));
-                },
-                icon: const Icon(Icons.star_rate_outlined)),
-          ),
+                  child: IconButton(
+                      onPressed: () {
+                        Get.to(() => FavoritesScreen(
+                              text: homeCtrl.favoritesWordList.join('\n'),
+                            ));
+                      },
+                      icon: const Icon(Icons.star_rate_outlined)),
+                )
+              : IconButton(
+                  onPressed: () {
+                    Get.to(() => FavoritesScreen(
+                          text: homeCtrl.favoritesWordList.join('\n'),
+                        ));
+                  },
+                  icon: const Icon(Icons.star_rate_outlined)),
           IconButton(
               onPressed: () {
                 Get.to(() => SettingScreen());
               },
-              icon: Icon(Icons.settings)),
+              icon: const Icon(Icons.settings)),
         ],
         elevation: 4,
       ),
@@ -316,7 +334,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                                     Text(
                                       homeCtrl.wordMeaningList[0],
                                       style: GoogleFonts.notoSans(
-                                          textStyle: TextStyle(fontSize: 25)),
+                                          textStyle:
+                                              const TextStyle(fontSize: 25)),
                                     ),
                                   ],
                                 ),
@@ -383,7 +402,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                                 ),
                               ),
                               style: GoogleFonts.notoSans(
-                                  textStyle: TextStyle(fontSize: 20)),
+                                  textStyle: const TextStyle(fontSize: 20)),
                             ),
                           ),
                           Padding(
@@ -396,7 +415,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                                         ? _submitForm()
                                         : _dictationMode();
                                   },
-                                  icon: Icon(Icons.check),
+                                  icon: const Icon(Icons.check),
                                 )),
                           ),
                         ],
@@ -433,7 +452,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                               ),
                             ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Tooltip(
                             message: "Number of remaining words",
                             child: Container(
@@ -461,11 +480,21 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
             : Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Center(
-                  child: Text(
-                    "You need to add words to the list first, click right top corner to add words",
-                    style: GoogleFonts.notoSans(
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 20)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "You need to add words to the list first, To add a word, click on the upper right",
+                        style: GoogleFonts.notoSans(
+                            textStyle: const TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 20)),
+                      ),
+                      const SizedBox(width: 10),
+                      Icon(
+                        Icons.settings,
+                        color: Theme.of(context).colorScheme.primary,
+                      )
+                    ],
                   ),
                 ),
               );
