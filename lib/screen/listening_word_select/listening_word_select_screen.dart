@@ -96,7 +96,12 @@ Aperiam euismod cu eam. Nihil gloriatur duo ad, eum in etiam malorum, graece scr
                             if (i > 0 &&
                                 words[i - 1].word == " " &&
                                 words[i - 2].isSelect) {
+                              if (adjecentSentence.length > 1) {
+                                adjecentSentence
+                                    .removeAt(adjecentSentence.length - 1);
+                              }
                               adjecentSentence.add(words[i - 2].word);
+                              adjecentSentence.add(words[i].word);
                               if (isNotDelete) {
                                 isNotDelete = false;
                                 importantWord
