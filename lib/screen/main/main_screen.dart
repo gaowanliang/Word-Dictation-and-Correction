@@ -40,6 +40,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
   final _wordInputController = TextEditingController();
   var focusNode = FocusNode();
+  var isFavorite = false.obs;
 
   @override
   initState() {
@@ -113,17 +114,41 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     homeCtrl.ttsLanguages.value = languages;
   }
 
+  void favoritedWord(int type) {
+    if (homeCtrl.favoritesWordList.contains(
+        "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}")) {
+      SmartDialog.showToast("This word is already in the Favorites list");
+    } else {
+      SmartDialog.showToast(
+          "Successfully collected, click on the \"star\" icon in the upper right corner to view");
+
+      // 将数字转换为带圈数字，例如：1 -> ①
+      var circularNumber = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨"];
+      String wordType = "";
+      if (type > 0 && type < 10) {
+        wordType = "　${circularNumber[type - 1]}";
+      }
+
+      homeCtrl.favoritesWordList.add(
+          "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}$wordType");
+      isFavorite.value = true;
+    }
+  }
+
   void _submitForm() {
     if (_wordInputController.text == homeCtrl.wordList[0]) {
       if (homeCtrl.remainInputTimes.value == 1) {
         if (!homeCtrl.isBlur.value ||
             (homeCtrl.isBlur.value && wordBlur.value)) {
+          // 最后一个词输入正确
           homeCtrl.wordList.removeAt(0);
           homeCtrl.wordMeaningList.removeAt(0);
           homeCtrl.remainInputTimes.value = homeCtrl.correctTimes.value;
           wordBlur.value = homeCtrl.isBlur.value ? true : false;
           speakAllowed.value = true;
+          isFavorite.value = false;
         } else if (homeCtrl.isBlur.value && !wordBlur.value) {
+          // 最后一个词输入正确，但是没有模糊
           wordBlur.value = homeCtrl.isBlur.value ? true : false;
         }
         _wordInputController.clear();
@@ -142,25 +167,23 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
       _speak(homeCtrl.wordList[0]);
     } else {
-      switch (_wordInputController.text) {
-        case "...":
-          if (homeCtrl.favoritesWordList.contains(
-              "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}")) {
-            SmartDialog.showToast("This word is already in the Favorites list");
-          } else {
-            SmartDialog.showToast(
-                "Successfully collected, click on the \"star\" icon in the upper right corner to view");
-
-            homeCtrl.favoritesWordList.add(
-                "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}");
-          }
-          break;
-        case "":
-          SmartDialog.showToast('Please enter the word');
-          break;
-        default:
-          wordBlur.value = false;
-          SmartDialog.showToast('Wrong answer, please try again');
+      // 用正则表达式判断是否是“...\d”这种格式
+      RegExp regExp = RegExp(r"\.{3}\d");
+      if (regExp.hasMatch(_wordInputController.text)) {
+        var type = int.parse(_wordInputController.text.substring(3));
+        favoritedWord(type);
+      } else {
+        switch (_wordInputController.text) {
+          case "...":
+            favoritedWord(0);
+            break;
+          case "":
+            SmartDialog.showToast('Please enter the word');
+            break;
+          default:
+            wordBlur.value = false;
+            SmartDialog.showToast('Wrong answer, please try again');
+        }
       }
 
       _wordInputController.clear();
@@ -383,7 +406,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                               decoration: InputDecoration(
                                 labelText: 'Enter the word',
                                 labelStyle: GoogleFonts.notoSans(
-                                    textStyle: const TextStyle(fontSize: 20)),
+                                    textStyle: TextStyle(
+                                  fontSize: 20,
+                                  color: isFavorite.value
+                                      ? const Color(0xfff1c40f)
+                                      : Theme.of(context).colorScheme.primary,
+                                )),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                     color:
@@ -394,8 +422,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: isFavorite.value
+                                        ? const Color(0xfff1c40f)
+                                        : Theme.of(context).colorScheme.primary,
                                     width: 2,
                                   ),
                                   borderRadius: BorderRadius.circular(10),
