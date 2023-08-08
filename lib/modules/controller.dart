@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../service/storage/service.dart';
+
 class HomeController extends GetxController {
   HomeController();
+  final _storage = Get.find<StorageService>();
   final formKey = GlobalKey<FormState>();
   final wordList = <String>[].obs;
   final wordMeaningList = <String>[].obs;
@@ -17,7 +20,7 @@ class HomeController extends GetxController {
   final wrongWordList = <String>[].obs;
   final favoritesWordList = <String>[].obs;
 
-  saveWord(String data, int mode, int? correctTimes, bool? isBlur) {
+  void saveWord(String data, int mode, int? correctTimes, bool? isBlur) {
     wordAndMeaningText.value = data;
     for (var item in data.split('\n')) {
       // 首先去掉首尾的空格
@@ -39,5 +42,49 @@ class HomeController extends GetxController {
       remainInputTimes.value = 1;
       this.correctTimes.value = 1;
     }
+  }
+
+  saveSessionData(bool speakAllowed, bool wordBlur, bool isFavorite,
+      String previousWordInfo) {
+    _storage.writeSessionData(SessionData(
+        wordList,
+        wordMeaningList,
+        mode.value,
+        isBlur.value,
+        correctTimes.value,
+        remainInputTimes.value,
+        separator.value,
+        ttsLanguage.value,
+        wrongWordList,
+        favoritesWordList,
+        speakAllowed,
+        wordBlur,
+        isFavorite,
+        previousWordInfo));
+    // print(_storage.readSessionData().toJson());
+  }
+
+  SessionData readSessionData() {
+    var sessionData = _storage.readSessionData();
+    if (sessionData.wordList.isNotEmpty) {
+      wordList.value = sessionData.wordList;
+      wordMeaningList.value = sessionData.wordMeaningList;
+      mode.value = sessionData.mode;
+      isBlur.value = sessionData.isBlur;
+      correctTimes.value = sessionData.correctTimes;
+      remainInputTimes.value = sessionData.remainInputTimes;
+      separator.value = sessionData.separator;
+      ttsLanguage.value = sessionData.ttsLanguage;
+      wrongWordList.value = sessionData.wrongWordList;
+      favoritesWordList.value = sessionData.favoritesWordList;
+      return sessionData;
+    }
+
+    return SessionData(
+        [], [], 0, false, 0, 0, " ", "en-US", [], [], false, false, false, " ");
+  }
+
+  void clearSessionData() {
+    _storage.clearSessionData();
   }
 }

@@ -1,12 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:word_dictation/data/common/constant.dart';
 import 'package:word_dictation/screen/listening_word_select/generate_article_important.dart';
+
+import '../../service/storage/service.dart';
 
 class ListeningWordSelectScreen extends StatelessWidget {
   ListeningWordSelectScreen({Key? key}) : super(key: key);
   final _editCtrl = TextEditingController();
+  final _storage = Get.find<StorageService>();
+  var isLaunch = false;
 
   TextSpan _buildTextSpan(String text, int index, Color borderColor,
       Color textColor, Function feedback) {
@@ -32,10 +38,22 @@ class ListeningWordSelectScreen extends StatelessWidget {
         """Lorem ipsum dolor sit amet, ea ornatus civibus conceptam has, eam case aeque tantas ei. Mea at causae tacimates. Ei sed oporteat lucilius interpretaris. Corpora detracto omnesque sit no, eam no dolor nullam. Adhuc expetendis eu nam. Te ius ferri feugait. An vix inani molestie dissentiunt, has assum iriure mentitum ei.
 
 Aperiam euismod cu eam. Nihil gloriatur duo ad, eum in etiam malorum, graece scribentur sit ex. Ut sed discere omnesque. Inani facilis in vel, inermis quaerendum pri id, sea posse habemus singulis id.""";
-
     var isShowText = false.obs;
     var isUsuallyUsingWordsNeedVisible = false.obs;
     var words = <WordInfo>[].obs;
+    if (!isLaunch) {
+      isLaunch = true;
+      var iListeningInfo = _storage.readListeningInfo();
+      if (iListeningInfo.words.isNotEmpty) {
+        isShowText.value = iListeningInfo.isShowText;
+        isUsuallyUsingWordsNeedVisible.value =
+            iListeningInfo.isUsuallyUsingWordsNeedVisible;
+        // print(iListeningInfo.words);
+        for (var element in iListeningInfo.words) {
+          words.add(element);
+        }
+      }
+    }
 
     generateInfo(bool showText) {
       words.clear();
@@ -66,7 +84,55 @@ Aperiam euismod cu eam. Nihil gloriatur duo ad, eum in etiam malorum, graece scr
           actions: words.isNotEmpty
               ? [
                   IconButton(
-                      onPressed: () => words.clear(),
+                      onPressed: () async {
+                        var result = await SmartDialog.show(builder: (_) {
+                          var message = '';
+                          return Container(
+                            width: 300,
+                            height: 170,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.background,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 300,
+                                    margin: const EdgeInsets.only(bottom: 30),
+                                    child: Text(
+                                      "Are you sure you want to delete Listening Article?",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.notoSans(
+                                          textStyle:
+                                              const TextStyle(fontSize: 16)),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            SmartDialog.dismiss(result: true),
+                                        child: const Text('Confirm'),
+                                      ),
+                                      const SizedBox(width: 20),
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            SmartDialog.dismiss(result: false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                    ],
+                                  )
+                                ]),
+                          );
+                        });
+                        if (result) {
+                          words.clear();
+                          _storage.clearListeningInfo();
+                        }
+                      },
                       icon: const Icon(Icons.delete_outline_outlined)),
                   IconButton(
                       onPressed: () {
@@ -214,6 +280,10 @@ Aperiam euismod cu eam. Nihil gloriatur duo ad, eum in etiam malorum, graece scr
                                   borderColor, textColor, () {
                                 words[index].isSelect = !words[index].isSelect;
                                 words.refresh();
+                                _storage.writeListeningInfo(ListeningInfo(
+                                    isShowText.value,
+                                    isUsuallyUsingWordsNeedVisible.value,
+                                    words));
                               });
                             },
                           ),
@@ -226,12 +296,4 @@ Aperiam euismod cu eam. Nihil gloriatur duo ad, eum in etiam malorum, graece scr
       ),
     );
   }
-}
-
-class WordInfo {
-  String word;
-  bool isWord;
-  bool isSelect;
-
-  WordInfo(this.word, this.isWord, this.isSelect);
 }

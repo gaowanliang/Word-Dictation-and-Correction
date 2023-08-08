@@ -41,6 +41,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   final _wordInputController = TextEditingController();
   var focusNode = FocusNode();
   var isFavorite = false.obs;
+  var previousWordInfo = "";
+  var isLaunch = false;
 
   @override
   initState() {
@@ -114,33 +116,61 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     homeCtrl.ttsLanguages.value = languages;
   }
 
-  void favoritedWord(int type) {
-    if (homeCtrl.favoritesWordList.contains(
-        "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}")) {
-      SmartDialog.showToast("This word is already in the Favorites list");
-    } else {
-      SmartDialog.showToast(
-          "Successfully collected, click on the \"star\" icon in the upper right corner to view");
+  void favoritedWord(int type, bool isLastWord, bool isImportantWord) {
+    // 将数字转换为带圈数字，例如：1 -> ①
+    var circularNumber = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨"];
+    String wordType = "";
+    if (type > 0 && type < 10) wordType = "　${circularNumber[type - 1]}";
 
-      // 将数字转换为带圈数字，例如：1 -> ①
-      var circularNumber = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨"];
-      String wordType = "";
-      if (type > 0 && type < 10) {
-        wordType = "　${circularNumber[type - 1]}";
+    if (isImportantWord) wordType += "　⭐";
+    if (isLastWord) {
+      if (previousWordInfo == "") {
+        SmartDialog.showToast(
+            "previous word information is empty, please enter the word first");
+        return;
       }
-
-      homeCtrl.favoritesWordList.add(
-          "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}$wordType");
-      isFavorite.value = true;
+      if (homeCtrl.favoritesWordList.isNotEmpty &&
+          homeCtrl.favoritesWordList[homeCtrl.favoritesWordList.length - 1]
+              .contains(previousWordInfo)) {
+        homeCtrl.favoritesWordList[homeCtrl.favoritesWordList.length - 1] =
+            previousWordInfo + wordType;
+        SmartDialog.showToast(
+            "Successfully changed the previous word: ${previousWordInfo.split(homeCtrl.separator.value)[0]}, check on the \"star\" icon in the upper right corner to view");
+      } else {
+        homeCtrl.favoritesWordList.add(previousWordInfo + wordType);
+        var previousWord = previousWordInfo.split(homeCtrl.separator.value)[0];
+        SmartDialog.showToast(
+            "Successfully collected the previous word: $previousWord, check on the \"star\" icon in the upper right corner to view");
+      }
+    } else {
+      if (homeCtrl.favoritesWordList.isNotEmpty &&
+          homeCtrl.favoritesWordList[homeCtrl.favoritesWordList.length - 1]
+              .contains(homeCtrl.wordList[0])) {
+        homeCtrl.favoritesWordList[homeCtrl.favoritesWordList.length - 1] =
+            "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}$wordType";
+        SmartDialog.showToast(
+            "Successfully changed the word: ${homeCtrl.wordList[0]}, check on the \"star\" icon in the upper right corner to view");
+      } else {
+        homeCtrl.favoritesWordList.add(
+            "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}$wordType");
+        SmartDialog.showToast(
+            "Successfully collected the word: ${homeCtrl.wordList[0]}, check on the \"star\" icon in the upper right corner to view");
+        isFavorite.value = true;
+      }
     }
   }
 
   void _submitForm() {
+    homeCtrl.saveSessionData(
+        speakAllowed.value, wordBlur.value, isFavorite.value, previousWordInfo);
+
     if (_wordInputController.text == homeCtrl.wordList[0]) {
       if (homeCtrl.remainInputTimes.value == 1) {
         if (!homeCtrl.isBlur.value ||
             (homeCtrl.isBlur.value && wordBlur.value)) {
           // 最后一个词输入正确
+          previousWordInfo =
+              "${homeCtrl.wordList[0]}${homeCtrl.separator.value}${homeCtrl.wordMeaningList[0]}";
           homeCtrl.wordList.removeAt(0);
           homeCtrl.wordMeaningList.removeAt(0);
           homeCtrl.remainInputTimes.value = homeCtrl.correctTimes.value;
@@ -154,7 +184,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         _wordInputController.clear();
         _speak(homeCtrl.wordList[0]);
         FocusScope.of(context).requestFocus(focusNode);
-
+        homeCtrl.saveSessionData(speakAllowed.value, wordBlur.value,
+            isFavorite.value, previousWordInfo);
         return;
       }
 
@@ -168,15 +199,26 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       _speak(homeCtrl.wordList[0]);
     } else {
       // 用正则表达式判断是否是“...\d”这种格式
-      RegExp regExp = RegExp(r"\.{3}\d");
+      RegExp regExp = RegExp(r"\.{3}\d?[\-\*]?");
       if (regExp.hasMatch(_wordInputController.text)) {
-        var type = int.parse(_wordInputController.text.substring(3));
-        favoritedWord(type);
+        if (_wordInputController.text == "...") {
+          favoritedWord(0, false, false);
+        } else {
+          final regex = RegExp(r'\.{3}(\d)?([\-\*])?([\-\*])?');
+          final match = regex.firstMatch(_wordInputController.text);
+          final number = match?.group(1); // 获取第一个括号中的内容
+          final symbol1 = match?.group(2); // 获取第二个括号中的内容
+          final symbol2 = match?.group(3); // 获取第三个括号中的内容
+          var type = 0, isLastWord = false, isImportantWord = false;
+
+          if (number != null) type = int.parse(number);
+          if (symbol1 == "-" || symbol2 == "-") isLastWord = true;
+          if (symbol1 == "*" || symbol2 == "*") isImportantWord = true;
+
+          favoritedWord(type, isLastWord, isImportantWord);
+        }
       } else {
         switch (_wordInputController.text) {
-          case "...":
-            favoritedWord(0);
-            break;
           case "":
             SmartDialog.showToast('Please enter the word');
             break;
@@ -230,7 +272,17 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    _getLanguages();
+    if (!isLaunch) {
+      isLaunch = true;
+      var iSessionData = homeCtrl.readSessionData();
+      if (iSessionData.wordList.isNotEmpty) {
+        speakAllowed.value = iSessionData.speakAllowed;
+        wordBlur.value = iSessionData.wordBlur;
+        isFavorite.value = iSessionData.isFavorite;
+        previousWordInfo = iSessionData.previousWordInfo;
+      }
+      _getLanguages();
+    }
 
     return Scaffold(
       key: scaffoldKey,
@@ -259,6 +311,54 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 Get.to(() => ListeningWordSelectScreen());
               },
               icon: const Icon(Icons.linear_scale_outlined)),
+          IconButton(
+              onPressed: () async {
+                var result = await SmartDialog.show(builder: (_) {
+                  var message = '';
+                  return Container(
+                    width: 300,
+                    height: 170,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.background,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                        width: 300,
+                        margin: const EdgeInsets.only(bottom: 30),
+                        child: Text(
+                          'Are you sure you want to clear the current word list?',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.notoSans(
+                              textStyle: const TextStyle(fontSize: 16)),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => SmartDialog.dismiss(result: true),
+                            child: const Text('Confirm'),
+                          ),
+                          const SizedBox(width: 20),
+                          ElevatedButton(
+                            onPressed: () => SmartDialog.dismiss(result: false),
+                            child: const Text('Cancel'),
+                          ),
+                        ],
+                      )
+                    ]),
+                  );
+                });
+                if (result) {
+                  homeCtrl.clearSessionData();
+                  homeCtrl.wordList.clear();
+                  homeCtrl.wordMeaningList.clear();
+                  homeCtrl.wrongWordList.clear();
+                }
+              },
+              icon: const Icon(Icons.delete_forever_outlined)),
           homeCtrl.favoritesWordList.isNotEmpty
               ? badges.Badge(
                   badgeContent: Text(
@@ -509,11 +609,11 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
             : Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Wrap(
                     children: [
                       Text(
                         "You need to add words to the list first, To add a word, click on the upper right",
+                        softWrap: true,
                         style: GoogleFonts.notoSans(
                             textStyle: const TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 20)),
