@@ -52,6 +52,10 @@ class SessionData {
       "previousWordInfo": previousWordInfo,
     };
   }
+
+  bool wordListIsNotEmpty() {
+    return wordList.isNotEmpty;
+  }
 }
 
 class WordInfo {
@@ -82,6 +86,10 @@ class ListeningInfo {
       "words": words.map((e) => e.toJson()).toList(),
     };
   }
+
+  bool wordsIsNotEmpty() {
+    return words.isNotEmpty;
+  }
 }
 
 class StorageService extends GetxService {
@@ -99,32 +107,37 @@ class StorageService extends GetxService {
 
   SessionData readSessionData() {
     final json = _box.read("sessionData");
-    try {
+    if (json is SessionData) {
+      if (json.wordListIsNotEmpty()) {
+        return json;
+      } else {
+        return SessionData([], [], 0, false, 0, 0, " ", "en-US", [], [], false,
+            false, false, " ");
+      }
+    } else if (json is Map) {
       if (json.containsKey('wordList') && json['wordList'].isEmpty) {
         return SessionData([], [], 0, false, 0, 0, " ", "en-US", [], [], false,
             false, false, " ");
       }
-    } catch (e) {
-      print(e);
-      return SessionData([], [], 0, false, 0, 0, " ", "en-US", [], [], false,
-          false, false, " ");
-    }
 
+      return SessionData(
+          List<String>.from(json['wordList']),
+          List<String>.from(json['wordMeaningList']),
+          json["mode"],
+          json["isBlur"],
+          json["correctTimes"],
+          json["remainInputTimes"],
+          json["separator"],
+          json["ttsLanguage"],
+          List<String>.from(json['wrongWordList']),
+          List<String>.from(json['favoritesWordList']),
+          json["speakAllowed"],
+          json["wordBlur"],
+          json["isFavorite"],
+          json["previousWordInfo"]);
+    }
     return SessionData(
-        List<String>.from(json['wordList']),
-        List<String>.from(json['wordMeaningList']),
-        json["mode"],
-        json["isBlur"],
-        json["correctTimes"],
-        json["remainInputTimes"],
-        json["separator"],
-        json["ttsLanguage"],
-        List<String>.from(json['wrongWordList']),
-        List<String>.from(json['favoritesWordList']),
-        json["speakAllowed"],
-        json["wordBlur"],
-        json["isFavorite"],
-        json["previousWordInfo"]);
+        [], [], 0, false, 0, 0, " ", "en-US", [], [], false, false, false, " ");
   }
 
   void writeSessionData(SessionData value) async {
@@ -140,24 +153,26 @@ class StorageService extends GetxService {
 
   ListeningInfo readListeningInfo() {
     final json = _box.read("ListeningInfo");
-    // print(json);
-    try {
+    print(json.runtimeType);
+    if (json is ListeningInfo) {
+      if (json.wordsIsNotEmpty()) {
+        return json;
+      } else {
+        return ListeningInfo(false, false, []);
+      }
+    } else if (json is Map) {
       if (json.containsKey('words') && json['words'].isEmpty) {
         return ListeningInfo(false, false, []);
       }
-    } catch (e) {
-      print(e);
-      return ListeningInfo(false, false, []);
+      List<WordInfo> words = [];
+
+      for (var item in json['words']) {
+        words.add(WordInfo(item['word'], item['isWord'], item['isSelect']));
+      }
+      return ListeningInfo(
+          json["isShowText"], json["isUsuallyUsingWordsNeedVisible"], words);
     }
-
-    List<WordInfo> words = [];
-
-    for (var item in json['words']) {
-      words.add(WordInfo(item['word'], item['isWord'], item['isSelect']));
-    }
-
-    return ListeningInfo(
-        json["isShowText"], json["isUsuallyUsingWordsNeedVisible"], words);
+    return ListeningInfo(false, false, []);
   }
 
   void writeListeningInfo(ListeningInfo value) async {
